@@ -1,0 +1,11 @@
+dist/
+__pycache__/
+sphinx/
+docs/
+sphinx/build/doctrees/
+sphinx/build/latex/*
+# !sphinx/build/latex/npgui.pdf
+.buildinfo
+
+
+
