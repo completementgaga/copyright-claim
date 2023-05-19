@@ -40,23 +40,48 @@ $ copyright-claim -h
 ```
 in your terminal and observe
 ```
-usage: copyright_claim [-h] [--claim_path CLAIM_PATH] [-r] [--extension EXTENSION] [--comment_symbol COMMENT_SYMBOL] {add,remove} project_path
+usage: copyright_claim [-h] [--project_path PROJECT_PATH]
+                       [--claim_path CLAIM_PATH] [-r] [--ext EXT]
+                       [--comment_symbol COMMENT_SYMBOL]
+                       [--start_string START_STRING] [--end_string END_STRING]
+                       {add,remove,dummy}
 
 Adds and removes copyright claims at the beginning of text files.
 
 positional arguments:
-  {add,remove}          Choose "add" if you want to add the claim, "remove" if you want to remove it.
-  project_path          The path to the file or directory to be treated.
+  {add,remove,dummy}    Choose "add" if you want to add the claim, "remove" if
+                        you want to remove it. The "dummy" option simply
+                        outputs our dummy example of a copyright claim.
 
 options:
   -h, --help            show this help message and exit
+  --project_path PROJECT_PATH, -p PROJECT_PATH
+                        The path to the file or directory to be treated. It is
+                        a compulsory argument, unless the 'dummy' option is
+                        being used
   --claim_path CLAIM_PATH, -c CLAIM_PATH
-                        In case the add option is used, this argument is necessary. Useless otherwise.
-  -r                    This flag must be used when treating a directory is desired. In this case all the file within the directory and its subdirectories will be affected, provided they have the chosen extension.
-  --extension EXTENSION, -e EXTENSION
-                        The extension that characterizes the file(s) to be treated. Defaults to ".py". When processing a single file, this argument is ignored.
+                        The path to the text of your copyright claim. In case
+                        the add option is used, this argument is necessary.
+                        Useless otherwise. For testing purposes you can use
+                        the special value 'dummy' which allows to use our
+                        dummy copyright claim.
+  -r                    This flag must be used when treating a directory is
+                        desired. In this case all the file within the
+                        directory and its subdirectories will be affected,
+                        provided they have the chosen extension.
+  --ext EXT             The extension that characterizes the file(s) to be
+                        treated. Defaults to ".py". When processing a single
+                        file, this argument is ignored.
   --comment_symbol COMMENT_SYMBOL
-                        The string to be used to comment out the lines of the claim block. Defaults to '# '.
+                        The string to be used to comment out the lines of the
+                        claim block. Defaults to '# '.
+  --start_string START_STRING, -s START_STRING
+                        The string that marks the beginning of the copyright
+                        claim block. Defaults to "COPYRIGHT CLAIM".
+  --end_string END_STRING, -e END_STRING
+                        The string that marks the beginning of the copyright
+                        claim block. Defaults to "END OF COPYRIGHT CLAIM".
+
 ```
 
 
