@@ -30,7 +30,7 @@ A detailed documentation of this package is available on
 [GitHub Pages](https://completementgaga.github.io/copyright-claim/) --- as a website.
 
 It is also available in pdf format
-[here](https://github.com/completementgaga/npGUI/blob/master/sphinx/build/latex/npgui.pdf).
+[here](https://github.com/completementgaga/copyright-claim/blob/master/sphinx/build/latex/copyright-claim.pdf).
 
 For the command line version, if you used pip to install the package,
 
