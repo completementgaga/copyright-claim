@@ -4,7 +4,7 @@ sphinx/
 docs/
 sphinx/build/doctrees/
 sphinx/build/latex/*
-# !sphinx/build/latex/npgui.pdf
+!sphinx/build/latex/copyright-claim.pdf
 .buildinfo
 
 

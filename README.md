@@ -19,7 +19,7 @@ $ pip install copyright-claim
 ```
 
 Most likely, you need not install this package in a virtual environment,
-since its only dependencies are the packages os and argparse which are provided
+since its only dependencies are packages which are provided
 in the standard library at least since version 3.7 of Python. 
 
 

@@ -13,13 +13,29 @@ The copyright_claim module
 
 It has two functions add_claim and remove_claim that are wrapped together
 by the third and last function main. This last one is called
-when this file is executed by python and allows terminal interaction with 
-the module. Use the --help flag to get details on this terminal aspect.
+when the file copyright_claim.py is executed by python and allows terminal
+interaction with the module. Use the --help flag to get details on this 
+terminal aspect.
+
+The same script is made available through the terminal command::
+
+
+    copyright-claim
+
+
+upon installation of the package copyright-claim with pip.
 
 """
 
 import argparse
 import os
+import pkgutil
+import warnings
+
+# The following will allow to reach the data within the package directory
+# hopefully, whatever the installation scheme.
+package_dir = os.path.dirname(pkgutil.resolve_name(__name__).__file__)
+dummy_claim_path = os.path.join(package_dir, "dummy_copyright_claim.txt")
 
 
 def add_claim(
@@ -56,8 +72,6 @@ def add_claim(
         modified.write(claim + data)
 
 
-
-
 def remove_claim(
     file_path: str,
     comment_symbol: str = "# ",
@@ -72,31 +86,34 @@ def remove_claim(
         start_string (str, optional): The start_string used by add_claim
             when inserting the claim. Defaults to "COPYRIGHT CLAIM".
         end_string (str, optional):The end_string used by add_claim
-            when inserting the claim. Defaults to "COPYRIGHT CLAIM".
+            when inserting the claim. Defaults to "END OF COPYRIGHT CLAIM".
         comment_symbol (str, optional): The comment_symbol used by
             add_claim when inserting the claim. Defaults to "# ".
 
-    Raises:
-        ValueError: "The passed text does not contain a copyright claim
-            block as it would be built with passed start_string,
-            end_string and comment_symbol."
     """
 
-    print('remove being called with args')
-    print('file_path',file_path)
+    no_claim_block = (
+        "The passed text file "
+        + file_path
+        + " does not contain a copyright claim "
+        + "block as it would be built with passed start_string, "
+        + "end_string and comment_symbol."
+    )
     with open(file_path, "r") as original:
         lines = original.readlines()
-    print(lines)
     try:
         u = lines.index(comment_symbol + start_string + "\n")
         v = lines.index(comment_symbol + end_string + "\n")
-        print(u,v)
     except:
-        raise ValueError(
-            "The passed text does not contain a copyright claim "
-            + "block as it would be built with passed start_string, "
-            + "end_string and comment_symbol."
-        )
+        warnings.warn(no_claim_block)
+        return None
+
+    # Check the lines between indices u and v are all commented out.
+    for i in range(u + 1, v):
+        if lines[i][: len(comment_symbol)] != comment_symbol:
+            warnings.warn(no_claim_block)
+            return None
+
     # We also wish to remove the skiplines that were added before and after
     # the claim block, so that remove_claim cancels totally add_claim.
     # We take some precautions, in case the file would have been edited
@@ -104,39 +121,46 @@ def remove_claim(
     # before and after the claim block.
     if u > 0 and lines[u - 1].replace(" ", "") == "\n":
         u -= 1
-    if lines[v+1].replace(" ", "") == "\n":
+    if lines[v + 1].replace(" ", "") == "\n":
         v += 1
-    print(u,v)
     lines = lines[:u] + lines[v + 1 :]
 
     with open(file_path, "w") as modified:
         modified.write("".join(lines))
 
 
+def dummy():
+    print(pkgutil.get_data(__name__, "dummy_copyright_claim.txt").decode())
 
 
 def main():
     "Wraps everything to form a terminal command."
-
+    # Argument parsing.
     parser = argparse.ArgumentParser(
         prog="copyright_claim",
         description="Adds and removes copyright claims at the beginning of text files.",
     )
     parser.add_argument(
         "mode",
-        choices=["add", "remove"],
+        choices=["add", "remove", "dummy"],
         help='Choose "add" if you want to add the claim, "remove" if you '
-        + "want to remove it.",
+        + 'want to remove it. The "dummy" option simply outputs our dummy '
+        + "example of a copyright claim.",
     )
     parser.add_argument(
-        "project_path", help="The path to the file or directory to be treated."
+        "--project_path",
+        "-p",
+        help="The path to the file or directory to be "
+        + "treated. It is a compulsory argument, unless the 'dummy' option "
+        + "is being used",
     )
     parser.add_argument(
         "--claim_path",
         "-c",
-        required=False,
-        help="In case the add option is used, this argument is necessary. "
-        + "Useless otherwise.",
+        help="The path to the text of your copyright claim. In case the add"
+        + " option is used, this argument is necessary. "
+        + "Useless otherwise. For testing purposes you can use the special "
+        + "value 'dummy' which allows to use our dummy copyright claim.",
     )
 
     parser.add_argument(
@@ -148,8 +172,7 @@ def main():
         + "chosen extension.",
     )
     parser.add_argument(
-        "--extension",
-        "-e",
+        "--ext",
         default=".py",
         help="The extension that characterizes the file(s) to be treated. "
         + 'Defaults to ".py".'
@@ -161,26 +184,42 @@ def main():
         + " Defaults to '# '.",
         default="# ",
     )
-
+    parser.add_argument(
+        "--start_string",
+        "-s",
+        help="The string that marks the beginning of "
+        + ' the copyright claim block. Defaults to "COPYRIGHT CLAIM".',
+    )
+    parser.add_argument(
+        "--end_string",
+        "-e",
+        help="The string that marks the beginning of the copyright claim block. "
+        + 'Defaults to "END OF COPYRIGHT CLAIM".',
+    )
     args = parser.parse_args()
-    my_last_args=[args.claim_path,args.comment_symbol]
-    if args.mode=='remove':
+    if args.mode == "dummy":
+        dummy()
+        return None
+    if args.claim_path == "dummy":
+        args.claim_path = dummy_claim_path
+    my_last_args = [args.claim_path, args.comment_symbol]
+    if args.mode == "remove":
         my_last_args.pop(0)
-        chosen_function=remove_claim
-
+        chosen_function = remove_claim
     else:
-        chosen_function=add_claim
+        chosen_function = add_claim
         if args.claim_path is None:
             parser.error(
-                "add requires --claim_path. "
-                + "claim_path was not specified."
+                "add requires --claim_path. " + "claim_path was not specified."
             )
+
     if not os.path.exists(args.project_path):
-        parser.error(
-            "The specified project_path does not exist."
-        )
+        parser.error("The specified project_path does not exist.")
+    # End of argument parsing
+
+    # ACTION!
     if os.path.isfile(args.project_path):
-        chosen_function(args.project_path,*my_last_args)
+        chosen_function(args.project_path, *my_last_args)
 
     if os.path.isdir(args.project_path):
         if not args.r:
@@ -191,9 +230,10 @@ def main():
         else:
             for root, dir, files in os.walk(args.project_path):
                 for name in files:
-                    if os.path.splitext(name)[-1] == args.extension:
+                    if os.path.splitext(name)[-1] == args.ext:
                         file_path = os.path.join(root, name)
-                        chosen_function(file_path,*my_last_args)
+                        chosen_function(file_path, *my_last_args)
+
 
 if __name__ == "__main__":
     main()
