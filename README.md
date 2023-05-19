@@ -1,4 +1,4 @@
-# npGUI
+# copyright-claim
 
 This very simple python package allows to add or remove copyright/license claims at
 the beginning of your  source files (single file use or whole folder use, the
