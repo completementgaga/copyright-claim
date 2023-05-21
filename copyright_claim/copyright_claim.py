@@ -53,7 +53,7 @@ def add_claim(
             string.
         start_string (str, optional): A string to mark the beginning of
             the copyright claim block. Defaults to "COPYRIGHT CLAIM".
-        end_string (str, optional): A string to mark the beginning of
+        end_string (str, optional): A string to mark the end of
             the copyright claim block. Defaults to "END OF COPYRIGHT
             CLAIM".
         comment_symbol (str, optional): The symbol that marks comment
@@ -137,7 +137,7 @@ def main():
     "Wraps everything to form a terminal command."
     # Argument parsing.
     parser = argparse.ArgumentParser(
-        prog="copyright_claim",
+        prog="copyright-claim",
         description="Adds and removes copyright claims at the beginning of text files.",
     )
     parser.add_argument(
